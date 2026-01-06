@@ -1,0 +1,5 @@
+{
+  "name": "AI Snake Master",
+  "description": "A classic Snake game enhanced with an AI-powered 'Snake Master' who provides live commentary, dynamic themes, and tactical advice using Gemini 3 Flash.",
+  "requestFramePermissions": []
+}
