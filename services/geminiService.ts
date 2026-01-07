@@ -2,10 +2,15 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { AIResponse } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export async function getGameCommentary(score: number, status: string, history: string[]): Promise<AIResponse> {
+  // Gracefully handle missing API key to prevent app crash
+  const apiKey = process.env.API_KEY;
+  if (!apiKey || apiKey === "undefined" || apiKey === "") {
+    return { commentary: "The Snake Master is observing silently." };
+  }
+
   try {
+    const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `The player is playing a Snake game. Current score: ${score}. Game status: ${status}. 
@@ -33,6 +38,6 @@ export async function getGameCommentary(score: number, status: string, history: 
     return result;
   } catch (error) {
     console.error("Gemini Error:", error);
-    return { commentary: "The Snake Master is speechless!" };
+    return { commentary: "The Snake Master is lost in thought." };
   }
 }

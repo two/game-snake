@@ -48,14 +48,22 @@ const App: React.FC = () => {
     setStatus(GameStatus.GAME_OVER);
     if (score > highScore) setHighScore(score);
     
-    setLoadingAI(true);
-    const aiResp = await getGameCommentary(score, "GAME_OVER", [commentary]);
-    setCommentary(aiResp.commentary);
-    setLoadingAI(false);
+    // AI call is wrapped to prevent it from affecting game flow
+    try {
+      setLoadingAI(true);
+      const aiResp = await getGameCommentary(score, "GAME_OVER", [commentary]);
+      setCommentary(aiResp.commentary || "Game Over.");
+    } catch (e) {
+      setCommentary("Game Over. Slither again?");
+    } finally {
+      setLoadingAI(false);
+    }
   }, [score, highScore, commentary]);
 
   const moveSnake = useCallback(() => {
     setSnake(prevSnake => {
+      if (status !== GameStatus.PLAYING) return prevSnake;
+
       const head = prevSnake[0];
       const move = DIRECTIONS[direction];
       const newHead = {
@@ -80,7 +88,7 @@ const App: React.FC = () => {
 
       return newSnake;
     });
-  }, [direction, food, generateFood, handleGameOver]);
+  }, [direction, food, generateFood, handleGameOver, status]);
 
   useEffect(() => {
     if (status === GameStatus.PLAYING) {
@@ -93,11 +101,16 @@ const App: React.FC = () => {
     if (score > 0 && score % 5 === 0 && score !== lastScoreRef.current) {
       lastScoreRef.current = score;
       const triggerAI = async () => {
-        setLoadingAI(true);
-        const aiResp = await getGameCommentary(score, "PLAYING", [commentary]);
-        setCommentary(aiResp.commentary);
-        if (aiResp.themeDescription) setTheme(aiResp.themeDescription);
-        setLoadingAI(false);
+        try {
+          setLoadingAI(true);
+          const aiResp = await getGameCommentary(score, "PLAYING", [commentary]);
+          if (aiResp.commentary) setCommentary(aiResp.commentary);
+          if (aiResp.themeDescription) setTheme(aiResp.themeDescription);
+        } catch (e) {
+          // Fail silently
+        } finally {
+          setLoadingAI(false);
+        }
       };
       triggerAI();
     }
