@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { GameStatus, Direction, Point, GameState, AIResponse } from './types';
+import { GameStatus, Direction, Point } from './types';
 import { GRID_SIZE, INITIAL_SPEED, MIN_SPEED, SPEED_INCREMENT, DIRECTIONS } from './constants';
 import { getGameCommentary } from './services/geminiService';
 
@@ -8,7 +8,7 @@ const App: React.FC = () => {
   const [snake, setSnake] = useState<Point[]>([{ x: 10, y: 10 }, { x: 10, y: 11 }, { x: 10, y: 12 }]);
   const [food, setFood] = useState<Point>({ x: 5, y: 5 });
   const [direction, setDirection] = useState<Direction>(Direction.UP);
-  const [status, setStatus] = useState<GameStatus>(Direction.UP ? GameStatus.IDLE : GameStatus.IDLE); // Fix: Ensure type compatibility
+  const [status, setStatus] = useState<GameStatus>(GameStatus.IDLE);
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [speed, setSpeed] = useState(INITIAL_SPEED);
@@ -20,7 +20,7 @@ const App: React.FC = () => {
   const touchStartRef = useRef<Point | null>(null);
 
   const generateFood = useCallback((currentSnake: Point[]): Point => {
-    let newFood;
+    let newFood: Point;
     while (true) {
       newFood = {
         x: Math.floor(Math.random() * GRID_SIZE),
@@ -172,7 +172,6 @@ const App: React.FC = () => {
 
       <div className="flex flex-col lg:flex-row landscape:flex-row gap-4 sm:gap-8 z-10 w-full max-w-6xl items-center lg:items-start justify-center">
         
-        {/* Left Stats: Desktop only or Large Landscape */}
         <div className="hidden lg:flex flex-col w-full lg:max-w-xs space-y-4">
           <div className="bg-slate-800/50 backdrop-blur-md border border-slate-700 p-6 rounded-2xl shadow-xl">
             <h2 className="text-slate-400 text-xs font-bold uppercase mb-4 tracking-wider">Game Status</h2>
@@ -199,7 +198,6 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Top Stats (Portrait) */}
         <div className="lg:hidden landscape:hidden flex justify-between w-full px-4 mb-2">
            <div className="flex gap-4">
               <span className="text-slate-400 text-[10px] uppercase">Score: <span className="text-emerald-400 font-bold">{score}</span></span>
@@ -210,7 +208,6 @@ const App: React.FC = () => {
            </div>
         </div>
 
-        {/* Center: Game Board */}
         <div className="relative group shrink-0">
           <div className="absolute -inset-1 bg-gradient-to-r from-emerald-600 to-cyan-600 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
           <div 
@@ -288,10 +285,8 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Side Control Panel (D-Pad + Stats on Landscape) */}
         <div className="flex lg:flex-col landscape:flex-col items-center justify-center gap-4 w-full lg:w-auto">
           
-          {/* Mobile Landscape Stats Panel */}
           <div className="hidden landscape:flex lg:hidden flex-col gap-2 bg-slate-800/40 p-3 rounded-xl border border-slate-700 w-32">
              <div className="text-center">
                 <p className="text-slate-500 text-[8px] uppercase">Score</p>
@@ -306,7 +301,6 @@ const App: React.FC = () => {
              </div>
           </div>
 
-          {/* D-Pad */}
           <div className="lg:hidden w-auto flex flex-col items-center justify-center shrink-0">
             <div className="grid grid-cols-3 gap-1 sm:gap-2">
               <div />
@@ -355,7 +349,6 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Desktop Extras */}
         <div className="hidden lg:flex flex-col w-full lg:max-w-xs space-y-4">
            <div className="bg-slate-800/50 backdrop-blur-md border border-slate-700 p-6 rounded-2xl shadow-xl">
             <h2 className="text-slate-400 text-xs font-bold uppercase mb-4 tracking-wider">Instructions</h2>
